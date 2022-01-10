@@ -7,36 +7,36 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 
-contract FORTSale is Ownable {
+contract DestinySale is Ownable {
 
     using SafeERC20 for ERC20;
     using Address for address;
 
-    uint constant MIMdecimals = 10 ** 18;
-    uint constant FORTdecimals = 10 ** 9;
-    uint public constant MAX_SOLD = 70000 * FORTdecimals;
-    uint public constant PRICE = 5 * MIMdecimals / FORTdecimals ;
-    uint public constant MAX_SALE_PER_ACCOUNT = 100 * FORTdecimals;
-    uint public constant MAX_PRESALE_PER_ACCOUNT = 200 * FORTdecimals;
+    uint constant BUSDdecimals = 10 ** 18;
+    uint constant FTLdecimals = 10 ** 9;
+    uint public constant MAX_SOLD = 70000 * FTLdecimals;
+    uint public constant PRICE = 7 * BUSDdecimals / FTLdecimals ;
+    uint public constant MAX_SALE_PER_ACCOUNT = 100 * FTLdecimals;
+    uint public constant MAX_PRESALE_PER_ACCOUNT = 200 * FTLdecimals;
 
     uint public sold;
     uint owed;
-    address public FORT;
+    address public FTL;
 
     mapping(address => uint256 ) public invested;
 
     address public dev;
 
-    ERC20 MIM;
+    ERC20 BUSD;
 
     uint presaleTimestamp;
 
     mapping( address => bool ) public approvedBuyers;
 
-    constructor( address _dev, uint _presaleTimestamp, address mim_address) {
+    constructor( address _dev, uint _presaleTimestamp, address busd_address) {
         dev = _dev;
         presaleTimestamp = _presaleTimestamp;
-        MIM = ERC20(mim_address);
+        BUSD = ERC20(busd_address);
     }
 
 
@@ -88,7 +88,7 @@ contract FORTSale is Ownable {
       }
 
 
-    function buyFORT(uint256 amount) public onlyEOA {
+    function buyFTL(uint256 amount) public onlyEOA {
         require(sold < MAX_SOLD, "sold out");
         require(sold + amount < MAX_SOLD, "not enough remaining");
         require(amount <= amountBuyable(msg.sender), "amount exceeds buyable amount");
@@ -98,15 +98,15 @@ contract FORTSale is Ownable {
         owed += amount;
     }
 
-    function claimFORT() public onlyEOA {
-      ERC20(FORT).transfer(msg.sender, invested[msg.sender]);
+    function claimFTL() public onlyEOA {
+      ERC20(FTL).transfer(msg.sender, invested[msg.sender]);
       owed -= invested[msg.sender];
       invested[msg.sender] = 0;
 
     }
-    function setClaimingActive(address fort) public {
+    function setClaimingActive(address ftl) public {
         require(msg.sender == dev, "!dev");
-        FORT = fort;
+        FTL = ftl;
     }
 
     function withdraw(address _token) public {
