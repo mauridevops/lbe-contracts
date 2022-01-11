@@ -92,7 +92,7 @@ contract DestinySale is Ownable {
         require(sold < MAX_SOLD, "sold out");
         require(sold + amount < MAX_SOLD, "not enough remaining");
         require(amount <= amountBuyable(msg.sender), "amount exceeds buyable amount");
-        MIM.safeTransferFrom( msg.sender, address(this), amount * PRICE  );
+        BUSD.safeTransferFrom( msg.sender, address(this), amount * PRICE  );
         invested[msg.sender] += amount;
         sold += amount;
         owed += amount;

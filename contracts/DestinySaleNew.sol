@@ -11,28 +11,28 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
   - old destiny presale contract is unused just keep for legacy functions
   - every blacklisted user is a bot who should not be able to claim
 */
-
+/*
 contract DestinySale {
     function dev() public view returns( address ) {}
     function sold() public view returns( uint ) {}
     function invested( address addr ) public view returns( uint ) {}
 }
-
+*/
 contract DestinySaleNew is Ownable {
     using SafeERC20 for ERC20;
     using Address for address;
 
     uint constant BUSDdecimals = 10 ** 18;
     uint constant FTLdecimals = 10 ** 9;
-    uint public constant MAX_SOLD = 70000 * FTLdecimals;
+    uint public constant MAX_SOLD = 70000000000000;
     uint public constant PRICE = 7 * BUSDdecimals / FTLdecimals ; // 7 busd per token
     uint public constant MIN_PRESALE_PER_ACCOUNT = 50 * FTLdecimals;
     uint public constant MAX_PRESALE_PER_ACCOUNT = 100 * FTLdecimals;
-    address public constant OLD_CONTRACT_ADDRESS = 0x8301f2213c0eed49a7e28ae4c3e91722919b8b47; // Destiny sale OLD legacy contract
+ //   address public constant OLD_CONTRACT_ADDRESS = 0x05e47Ce9448365FcB319743FF3f61AF914EdfADa; // Destiny sale OLD legacy contract
 
     address public dev;
     ERC20 BUSD;
-    DestinySale oldContract;
+//   DestinySale oldContract;
 
     uint public sold;
     address public FTL;
@@ -45,9 +45,9 @@ contract DestinySaleNew is Ownable {
 
     constructor() {
         BUSD = ERC20(0x78867BbEeF44f2326bF8DDd1941a4439382EF2A7); // testnet BUSD
-        oldContract = DestinySale(OLD_CONTRACT_ADDRESS);
+//        oldContract = DestinySale(OLD_CONTRACT_ADDRESS);
         dev = 0xa34a0247Ee187eeB497d7591381777EEA860D680; 
-        sold = oldContract.sold();
+//        sold = oldContract.sold();
     }
 
 
@@ -83,7 +83,7 @@ contract DestinySaleNew is Ownable {
         return _deapproveBuyer(newBuyer_);
     }
 
-    /* blacklisting old buyers who shouldn't be able to claim; subtract contrib from sold allocation */
+    /* blacklisting old buyers who shouldn't be able to claim; subtract contrib from sold allocation 
 
     function _blacklistBuyer( address badBuyer_ ) internal onlyOwner() returns ( bool ) {
         if (!blacklisted[badBuyer_]) {
@@ -103,7 +103,7 @@ contract DestinySaleNew is Ownable {
         }
         return badBuyers_.length;
     }
-
+*/
     /* allow non-blacklisted users to buy FTL */
 
     function amountBuyable(address buyer) public view returns (uint256) {
@@ -119,7 +119,7 @@ contract DestinySaleNew is Ownable {
         require(sold + amount < MAX_SOLD, "not enough remaining");
         require(amount <= amountBuyable(msg.sender), "amount exceeds buyable amount");
         require(amount + invested[msg.sender] >= MIN_PRESALE_PER_ACCOUNT, "amount is not sufficient");
-        require(oldContract.invested(msg.sender) == 0, "investor in previous LBE");
+//        require(oldContract.invested(msg.sender) == 0, "investor in previous LBE");
         BUSD.safeTransferFrom( msg.sender, address(this), amount * PRICE  );
         invested[msg.sender] += amount;
         sold += amount;
@@ -136,12 +136,12 @@ contract DestinySaleNew is Ownable {
     function claimFTL() public onlyEOA {
         require(canClaim, "cannot claim yet");
         require(!claimed[msg.sender], "already claimed");
-        require(!blacklisted[msg.sender], "blacklisted");
+//        require(!blacklisted[msg.sender], "blacklisted");
         if ( invested[msg.sender] > 0 ) {
             ERC20(FTL).transfer(msg.sender, invested[msg.sender]);
-        } else if ( oldContract.invested(msg.sender) > 0 ) {
+        }/*else if ( oldContract.invested(msg.sender) > 0 ) {
             ERC20(FTL).transfer(msg.sender, oldContract.invested(msg.sender));
-        }
+        }*/
         claimed[msg.sender] = true;
     }
 
